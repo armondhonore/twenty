@@ -1,0 +1,38 @@
+application:
+  name: twenty
+  pods:
+  - name: server
+    image: twentycrm/twenty:latest
+    path: /
+    servicePorts:
+    - 3000
+    vars:
+      DATABASE_PG_URL: "postgres://twenty:twenty@postgres.pod:5432/default"
+      REDIS_URL: "redis://redis.pod:6379"
+      APP_SECRET: "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2"
+      FRONT_BASE_URL: "https://relaxed-weasel-twenty.cloud.nexlayer.ai"
+      ENABLE_DB_MIGRATIONS: "true"
+      SIGN_IN_PREFILLED: "true"
+    volumes:
+    - name: twenty-data
+      mountPath: /app/.local-storage
+      size: 5Gi
+  - name: postgres
+    image: twentycrm/twenty-postgres:latest
+    servicePorts:
+    - 5432
+    vars:
+      POSTGRES_USER: twenty
+      POSTGRES_PASSWORD: twenty
+    volumes:
+    - name: twenty-db
+      mountPath: /bitnami/postgresql
+      size: 5Gi
+  - name: redis
+    image: redis:7-alpine
+    servicePorts:
+    - 6379
+    volumes:
+    - name: twenty-redis
+      mountPath: /data
+      size: 2Gi
